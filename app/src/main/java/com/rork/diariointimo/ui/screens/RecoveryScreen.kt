@@ -45,6 +45,12 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.rork.diariointimo.i18n.LocalStrings
+import com.rork.diariointimo.i18n.StringsDe
+import com.rork.diariointimo.i18n.StringsEn
+import com.rork.diariointimo.i18n.StringsEs
+import com.rork.diariointimo.i18n.StringsFr
+import com.rork.diariointimo.i18n.StringsIt
+import com.rork.diariointimo.i18n.StringsPt
 import com.rork.diariointimo.ui.components.InkIconButton
 import com.rork.diariointimo.ui.components.PaperBackground
 import com.rork.diariointimo.ui.components.SealedButton
@@ -55,6 +61,32 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private const val PRESET_COUNT = 6
+
+/**
+ * All preset questions across all supported languages. Used to resolve the
+ * correct question index even when the user changes the app language after
+ * setting up the recovery question.
+ */
+private val ALL_QUESTIONS: List<List<String>> = listOf(
+    listOf(StringsEs.question1, StringsEn.question1, StringsPt.question1, StringsFr.question1, StringsIt.question1, StringsDe.question1),
+    listOf(StringsEs.question2, StringsEn.question2, StringsPt.question2, StringsFr.question2, StringsIt.question2, StringsDe.question2),
+    listOf(StringsEs.question3, StringsEn.question3, StringsPt.question3, StringsFr.question3, StringsIt.question3, StringsDe.question3),
+    listOf(StringsEs.question4, StringsEn.question4, StringsPt.question4, StringsFr.question4, StringsIt.question4, StringsDe.question4),
+    listOf(StringsEs.question5, StringsEn.question5, StringsPt.question5, StringsFr.question5, StringsIt.question5, StringsDe.question5),
+    listOf(StringsEs.question6, StringsEn.question6, StringsPt.question6, StringsFr.question6, StringsIt.question6, StringsDe.question6),
+)
+
+/**
+ * Finds the preset index (0..5) for a stored question text that may be in
+ * any supported language. Returns PRESET_COUNT if the question is custom.
+ */
+internal fun resolveQuestionIndex(storedQuestion: String): Int {
+    if (storedQuestion.isBlank()) return 0
+    ALL_QUESTIONS.forEachIndexed { index, variants ->
+        if (variants.any { it.equals(storedQuestion, ignoreCase = true) }) return index
+    }
+    return PRESET_COUNT
+}
 
 /**
  * Edit the recovery method: the personal question, whose answer is re-entered
@@ -79,12 +111,18 @@ fun RecoveryScreen(
     var useQuestion by remember { mutableStateOf(question != null) }
     var questionIndex by remember {
         mutableIntStateOf(
-            presets.indexOf(question).takeIf { it >= 0 }
-                ?: if (question != null) PRESET_COUNT else 0
+            if (question != null) {
+                val localIndex = presets.indexOf(question)
+                if (localIndex >= 0) localIndex else resolveQuestionIndex(question)
+            } else 0
         )
     }
     var customQuestion by remember {
-        mutableStateOf(if (question != null && !presets.contains(question)) question else "")
+        mutableStateOf(
+            if (question != null && presets.indexOf(question) < 0 && resolveQuestionIndex(question) >= PRESET_COUNT) {
+                question
+            } else ""
+        )
     }
     var answer by remember { mutableStateOf("") }
     var message by remember { mutableStateOf<String?>(null) }

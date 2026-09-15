@@ -409,9 +409,7 @@ fun EditorScreen(
                             )
                         }
                 )
-                Spacer(Modifier.height(DiaryDim.space4))
-
-                Spacer(Modifier.height(DiaryDim.space3))
+                Spacer(Modifier.height(DiaryDim.space5))
 
                 val lineHeightPx = with(density) { BODY_LINE_HEIGHT_SP.sp.toPx() }
                 val ruleStart = with(density) { 4.dp.toPx() }
@@ -632,7 +630,7 @@ fun EditorScreen(
                 Text(text = strings.exportFormatTitle, style = MaterialTheme.typography.titleLarge)
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(DiaryDim.space3)) {
                     ExportOption(
                         icon = Icons.Outlined.Image,
                         label = strings.exportImage,

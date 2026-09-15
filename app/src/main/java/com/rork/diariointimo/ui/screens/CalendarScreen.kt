@@ -189,7 +189,7 @@ fun CalendarScreen(
                         AppearInk(delayMillis = index * 60) {
                             Surface(
                                 onClick = { onOpenEntry(entry.id) },
-                                shape = RoundedCornerShape(2.dp),
+                                shape = RoundedCornerShape(DiaryDim.radiusPaper),
                                 color = colors.paperLight.copy(alpha = 0.9f),
                                 border = BorderStroke(1.dp, colors.edge),
                                 modifier = Modifier

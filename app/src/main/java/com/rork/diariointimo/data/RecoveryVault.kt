@@ -28,7 +28,11 @@ class RecoveryVault(context: Context) {
 
     /** The configured question text, or null. It is stored encrypted for privacy. */
     fun questionText(): String? =
-        prefs.getString(KEY_QUESTION, null)?.decode()?.decodeToString()?.takeIf { it.isNotBlank() }
+        prefs.getString(KEY_QUESTION, null)
+            ?.decode()
+            ?.let { SecretVault.decrypt(it) }
+            ?.decodeToString()
+            ?.takeIf { it.isNotBlank() }
 
     fun setQuestion(question: String, answer: String) {
         val normalized = answer.normalized()

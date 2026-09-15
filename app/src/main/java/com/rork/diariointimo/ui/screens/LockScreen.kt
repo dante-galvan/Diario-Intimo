@@ -157,6 +157,16 @@ fun LockScreen(
     val presetQuestions = remember {
         listOf(strings.question1, strings.question2, strings.question3, strings.question4, strings.question5, strings.question6)
     }
+    // Resolve the chosen question index across all languages to avoid losing the
+    // selection when the app language changes after the question was set up.
+    val resolvedQuestionIndex by remember {
+        mutableIntStateOf(
+            if (recoveryQuestion != null) {
+                val localIndex = presetQuestions.indexOf(recoveryQuestion)
+                if (localIndex >= 0) localIndex else resolveQuestionIndex(recoveryQuestion)
+            } else 0
+        )
+    }
     val chosenQuestion: String? = when {
         questionIndex in 0 until PRESET_QUESTION_COUNT -> presetQuestions[questionIndex]
         questionIndex == PRESET_QUESTION_COUNT -> customQuestion.trim().takeIf { it.isNotEmpty() }
@@ -619,7 +629,7 @@ private fun LetterSheet(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(3.dp))
+            .clip(RoundedCornerShape(DiaryDim.radiusSheet))
             .background(
                 Brush.verticalGradient(
                     0f to colors.paperLight,
@@ -628,12 +638,12 @@ private fun LetterSheet(
                 )
             )
             .paperGrain(seed = 11, count = 180)
-            .padding(horizontal = 26.dp, vertical = 26.dp),
+            .padding(horizontal = DiaryDim.screenPad, vertical = DiaryDim.screenPad),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
-                .width(52.dp)
+                .width(DiaryDim.buttonHeight)
                 .height(1.dp)
                 .background(colors.gold.copy(alpha = 0.6f))
         )
@@ -669,7 +679,7 @@ private fun LetterSheet(
             animationSpec = tween(320),
             label = "errorAlpha"
         )
-        Box(modifier = Modifier.height(if (compact) 30.dp else 34.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.height(if (compact) DiaryDim.space8 else DiaryDim.space8), contentAlignment = Alignment.Center) {
             Text(
                 text = errorMessage.orEmpty(),
                 style = MaterialTheme.typography.titleMedium.copy(fontStyle = FontStyle.Italic),
@@ -711,7 +721,7 @@ private fun SecretEntry(
                 enabled = interactive,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(54.dp)
+                    .height(DiaryDim.buttonHeight)
                     .focusRequester(focusRequester),
                 textStyle = TextStyle(color = Color.Transparent, fontSize = 12.sp),
                 cursorBrush = SolidColor(Color.Transparent),
@@ -726,7 +736,7 @@ private fun SecretEntry(
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomStart)
-                        .size(40.dp)
+                        .size(DiaryDim.iconLarge)
                         .drawBehind {
                             drawCircle(
                                 color = colors.inkBlue.copy(alpha = 0.30f * (1f - inkBlot)),
@@ -867,7 +877,7 @@ private fun RecoveryAnswerForm(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (question.isNotBlank()) {
             Surface(
-                shape = RoundedCornerShape(2.dp),
+                shape = RoundedCornerShape(DiaryDim.radiusPaper),
                 color = colors.paper.copy(alpha = 0.7f),
                 border = androidx.compose.foundation.BorderStroke(1.dp, colors.edge.copy(alpha = 0.7f)),
                 modifier = Modifier.fillMaxWidth()
@@ -877,7 +887,7 @@ private fun RecoveryAnswerForm(
                     style = MaterialTheme.typography.titleMedium.copy(fontStyle = FontStyle.Italic),
                     color = colors.ink,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)
+                    modifier = Modifier.padding(horizontal = DiaryDim.space4, vertical = DiaryDim.space4)
                 )
             }
         }
@@ -913,7 +923,7 @@ private fun MethodRow(
     Surface(
         onClick = { onChecked(!checked) },
         enabled = enabled,
-        shape = RoundedCornerShape(2.dp),
+        shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (checked) colors.paperLight else colors.paperLight.copy(alpha = 0.55f),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
@@ -927,12 +937,12 @@ private fun MethodRow(
         ) {
             Box(
                 modifier = Modifier
-                    .size(16.dp)
+                    .size(DiaryDim.iconMedium)
                     .drawBehind {
                         drawCircle(
                             color = if (checked) colors.gold else colors.edge,
                             radius = size.minDimension / 2f,
-                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.6.dp.toPx())
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = DiaryDim.space1.toPx())
                         )
                         if (checked) {
                             drawCircle(
@@ -965,7 +975,7 @@ private fun QuestionChip(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        shape = RoundedCornerShape(2.dp),
+        shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (selected) colors.ink else colors.paperLight.copy(alpha = 0.75f),
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
@@ -995,7 +1005,7 @@ private fun PaperField(
 ) {
     val colors = LocalDiaryColors.current
     Surface(
-        shape = RoundedCornerShape(2.dp),
+        shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paperLight.copy(alpha = 0.85f),
         border = androidx.compose.foundation.BorderStroke(1.dp, colors.edge),
         modifier = Modifier.fillMaxWidth()

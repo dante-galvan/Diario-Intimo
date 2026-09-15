@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.LocalDiaryColors
 import com.rork.diariointimo.ui.theme.SerifFamily
 import kotlinx.coroutines.delay
@@ -58,11 +59,11 @@ fun PenIntro(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = 40.dp),
+                .padding(horizontal = DiaryDim.space10),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             FountainPen(height = 132.dp, tilt = -16f, writing = true)
-            Spacer(Modifier.height(34.dp))
+            Spacer(Modifier.height(DiaryDim.space8))
             Text(
                 text = title,
                 style = MaterialTheme.typography.displayMedium.copy(fontFamily = SerifFamily),
@@ -73,7 +74,7 @@ fun PenIntro(
                     clipRect(right = size.width * reveal.value) { this@drawWithContent.drawContent() }
                 }
             )
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(DiaryDim.space2))
             Text(
                 text = tagline,
                 style = MaterialTheme.typography.labelMedium,

@@ -213,7 +213,7 @@ fun SettingsScreen(
                     label = strings.lockDiary,
                     onClick = onLock,
                     modifier = Modifier
-                        .padding(horizontal = 24.dp)
+                        .padding(horizontal = DiaryDim.screenPad)
                         .fillMaxWidth()
                 )
             }
