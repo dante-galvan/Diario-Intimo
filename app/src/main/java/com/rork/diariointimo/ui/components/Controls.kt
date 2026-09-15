@@ -35,6 +35,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.semantics
 import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.LocalDiaryColors
 import com.rork.diariointimo.ui.theme.SansFamily
@@ -135,6 +140,9 @@ fun InkIconButton(
         color = if (active) colors.gold.copy(alpha = 0.16f) else colors.paperLight.copy(alpha = 0.7f),
         border = BorderStroke(1.dp, colors.edge.copy(alpha = if (active) 0.9f else 0.55f)),
         modifier = modifier
+            .semantics {
+                this.contentDescription = contentDescription
+            }
             .size(DiaryDim.touchTarget)
             .graphicsLayer {
                 scaleX = scale
@@ -172,7 +180,10 @@ fun PaperChip(
             1.dp,
             if (selected) colors.gold.copy(alpha = 0.6f) else colors.edge
         ),
-        modifier = modifier
+        modifier = modifier.semantics {
+            stateDescription = if (selected) "selected" else "not selected"
+            role = Role.Tab
+        }
     ) {
         Text(
             text = label.uppercase(),

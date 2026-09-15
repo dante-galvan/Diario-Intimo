@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +29,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -44,12 +48,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.rork.diariointimo.data.AppearanceMode
 import com.rork.diariointimo.data.AutoLockDelay
@@ -282,6 +288,7 @@ fun ActivatePasswordScreen(
     var repeat by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var created by remember { mutableStateOf(false) }
+    var showPassword by remember { mutableStateOf(false) }
 
     PaperBackground {
         Column(
@@ -289,6 +296,7 @@ fun ActivatePasswordScreen(
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
+                .imePadding()
         ) {
             ScreenHeader(title = strings.activatePassword, onBack = onBack)
             Column(
@@ -300,13 +308,17 @@ fun ActivatePasswordScreen(
                     SecretField(
                         label = strings.newPassword,
                         value = next,
-                        onValueChange = { next = it; error = null }
+                        onValueChange = { next = it; error = null },
+                        showPassword = showPassword,
+                        onToggleVisibility = { showPassword = !showPassword }
                     )
                     SecretField(
                         label = strings.repeatPassword,
                         value = repeat,
                         onValueChange = { repeat = it; error = null },
-                        imeAction = ImeAction.Done
+                        imeAction = ImeAction.Done,
+                        showPassword = showPassword,
+                        onToggleVisibility = { showPassword = !showPassword }
                     )
                     Text(
                         text = error.orEmpty(),
@@ -415,6 +427,7 @@ fun ChangePasswordScreen(
     var repeat by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     var success by remember { mutableStateOf(false) }
+    var showPassword by remember { mutableStateOf(false) }
 
     PaperBackground {
         Column(
@@ -422,6 +435,7 @@ fun ChangePasswordScreen(
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
+                .imePadding()
         ) {
             ScreenHeader(title = strings.changePassword, onBack = onBack)
             Column(
@@ -431,18 +445,24 @@ fun ChangePasswordScreen(
                 SecretField(
                     label = strings.currentPassword,
                     value = current,
-                    onValueChange = { current = it; error = null }
+                    onValueChange = { current = it; error = null },
+                    showPassword = showPassword,
+                    onToggleVisibility = { showPassword = !showPassword }
                 )
                 SecretField(
                     label = strings.newPassword,
                     value = next,
-                    onValueChange = { next = it; error = null }
+                    onValueChange = { next = it; error = null },
+                    showPassword = showPassword,
+                    onToggleVisibility = { showPassword = !showPassword }
                 )
                 SecretField(
                     label = strings.repeatPassword,
                     value = repeat,
                     onValueChange = { repeat = it; error = null },
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    showPassword = showPassword,
+                    onToggleVisibility = { showPassword = !showPassword }
                 )
 
                 val errorAlpha by animateFloatAsState(
@@ -675,7 +695,9 @@ private fun SecretField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
-    imeAction: ImeAction = ImeAction.Next
+    imeAction: ImeAction = ImeAction.Next,
+    showPassword: Boolean = false,
+    onToggleVisibility: (() -> Unit)? = null
 ) {
     val colors = LocalDiaryColors.current
     Column {
@@ -694,16 +716,36 @@ private fun SecretField(
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(if (onToggleVisibility != null) Modifier.padding(end = DiaryDim.touchTarget) else Modifier),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.ink),
                 cursorBrush = SolidColor(colors.gold),
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation('·'),
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation('·'),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = imeAction
                 )
             )
+            if (onToggleVisibility != null) {
+                androidx.compose.foundation.layout.Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .size(DiaryDim.touchTarget)
+                        .padding(DiaryDim.space1)
+                        .clip(RoundedCornerShape(DiaryDim.radiusPaper))
+                        .clickable(onClick = onToggleVisibility),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.material3.Icon(
+                        imageVector = if (showPassword) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                        contentDescription = if (showPassword) "Hide password" else "Show password",
+                        tint = colors.inkFaded,
+                        modifier = Modifier.size(DiaryDim.iconMedium)
+                    )
+                }
+            }
         }
         Box(
             modifier = Modifier

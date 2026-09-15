@@ -25,7 +25,7 @@ enum class AppearanceMode {
 
     companion object {
         fun fromId(value: String?): AppearanceMode =
-            entries.firstOrNull { it.name == value } ?: SYSTEM
+            entries.firstOrNull { it.name == value } ?: LIGHT
     }
 }
 
@@ -34,7 +34,7 @@ class SettingsStore(context: Context) {
     private val prefs = context.getSharedPreferences("diary_settings", Context.MODE_PRIVATE)
 
     var language: AppLanguage
-        get() = AppLanguage.fromId(prefs.getString(KEY_LANGUAGE, AppLanguage.AUTO.id))
+        get() = AppLanguage.fromId(prefs.getString(KEY_LANGUAGE, AppLanguage.EN.id))
         set(value) = prefs.edit().putString(KEY_LANGUAGE, value.id).apply()
 
     var appearance: AppearanceMode

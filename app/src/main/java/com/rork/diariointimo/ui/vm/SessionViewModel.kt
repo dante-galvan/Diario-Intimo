@@ -20,8 +20,8 @@ import kotlinx.coroutines.withContext
 data class SessionUiState(
     val hasPassword: Boolean = false,
     val isUnlocked: Boolean = false,
-    val language: AppLanguage = AppLanguage.AUTO,
-    val appearance: AppearanceMode = AppearanceMode.SYSTEM,
+    val language: AppLanguage = AppLanguage.EN,
+    val appearance: AppearanceMode = AppearanceMode.LIGHT,
     val autoLock: AutoLockDelay = AutoLockDelay.ONE,
     val biometryEnabled: Boolean = false,
     val biometryAvailable: Boolean = false,

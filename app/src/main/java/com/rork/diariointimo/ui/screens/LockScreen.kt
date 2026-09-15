@@ -1,5 +1,6 @@
 package com.rork.diariointimo.ui.screens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
@@ -62,6 +63,10 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -264,6 +269,41 @@ fun LockScreen(
             negativeText = strings.usePassword
         ) { ok ->
             if (ok) onSuccess() else fail(strings.biometryFallback, clearSecret = false)
+        }
+    }
+
+    BackHandler(enabled = interactive && stage != Stage.CHOOSE) {
+        when (stage) {
+            Stage.SECRET -> if (mode == LockMode.UNLOCK) Unit
+            Stage.CONFIRM -> {
+                stage = Stage.SECRET
+                confirmation = ""
+                errorMessage = null
+            }
+            Stage.RECOVERY_SETUP -> {
+                stage = Stage.CONFIRM
+                errorMessage = null
+            }
+            Stage.RECOVERY_ANSWER -> {
+                stage = Stage.SECRET
+                recoveryAnswer = ""
+                recoveryVerified = false
+                errorMessage = null
+            }
+            Stage.RECOVERY_NEW -> {
+                stage = Stage.RECOVERY_ANSWER
+                errorMessage = null
+            }
+            Stage.RECOVERY_CONFIRM -> {
+                stage = Stage.RECOVERY_NEW
+                newConfirm = ""
+                errorMessage = null
+            }
+            Stage.BIOMETRY -> {
+                onBiometryChange(false)
+                sealAndEnter()
+            }
+            else -> Unit
         }
     }
 
@@ -543,7 +583,11 @@ fun LockScreen(
                                     setupAnswer = it
                                     errorMessage = null
                                 },
-                                onSubmit = ::submit
+                                onSubmit = ::submit,
+                                onBack = {
+                                    stage = Stage.CONFIRM
+                                    errorMessage = null
+                                }
                             )
                             Stage.RECOVERY_ANSWER -> RecoveryAnswerForm(
                                 question = recoveryQuestion.orEmpty(),
@@ -563,42 +607,63 @@ fun LockScreen(
                                     errorMessage = null
                                 }
                             )
-                            else -> SecretEntry(
-                                action = action,
-                                value = current,
-                                writtenChars = writtenChars,
-                                interactive = interactive,
-                                biometryLink = if (mode == LockMode.UNLOCK && stage == Stage.SECRET &&
-                                    biometrySupported && biometryEnabled
-                                ) strings.biometryUnlock else null,
-                                forgotLink = if (mode == LockMode.UNLOCK && stage == Stage.SECRET &&
-                                    recoveryQuestion != null
-                                ) strings.forgotPassword else null,
-                                focusRequester = focusRequester,
-                                inkBlot = inkBlot.value,
-                                onValueChange = { next ->
-                                    if (next.length <= 40) {
-                                        when (stage) {
-                                            Stage.CONFIRM -> confirmation = next
-                                            Stage.RECOVERY_NEW -> newPassword = next
-                                            Stage.RECOVERY_CONFIRM -> newConfirm = next
-                                            else -> password = next
+                            else -> {
+                                val showBackLink = stage == Stage.RECOVERY_NEW || stage == Stage.RECOVERY_CONFIRM
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    SecretEntry(
+                                        action = action,
+                                        value = current,
+                                        writtenChars = writtenChars,
+                                        interactive = interactive,
+                                        biometryLink = if (mode == LockMode.UNLOCK && stage == Stage.SECRET &&
+                                            biometrySupported && biometryEnabled
+                                        ) strings.biometryUnlock else null,
+                                        forgotLink = if (mode == LockMode.UNLOCK && stage == Stage.SECRET &&
+                                            recoveryQuestion != null
+                                        ) strings.forgotPassword else null,
+                                        focusRequester = focusRequester,
+                                        inkBlot = inkBlot.value,
+                                        onValueChange = { next ->
+                                            if (next.length <= 40) {
+                                                when (stage) {
+                                                    Stage.CONFIRM -> confirmation = next
+                                                    Stage.RECOVERY_NEW -> newPassword = next
+                                                    Stage.RECOVERY_CONFIRM -> newConfirm = next
+                                                    else -> password = next
+                                                }
+                                                writtenChars = next.length
+                                                errorMessage = null
+                                            }
+                                        },
+                                        onSubmit = ::submit,
+                                        onLink = {
+                                            passwordOnly = false
+                                            errorMessage = null
+                                        },
+                                        onForgot = {
+                                            stage = Stage.RECOVERY_ANSWER
+                                            writtenChars = 0
+                                            errorMessage = null
                                         }
-                                        writtenChars = next.length
-                                        errorMessage = null
+                                    )
+                                    if (showBackLink) {
+                                        Spacer(Modifier.height(DiaryDim.space1))
+                                        QuietLink(
+                                            label = strings.back,
+                                            onClick = {
+                                                if (stage == Stage.RECOVERY_NEW) {
+                                                    stage = Stage.RECOVERY_ANSWER
+                                                } else {
+                                                    stage = Stage.RECOVERY_NEW
+                                                    newConfirm = ""
+                                                }
+                                                errorMessage = null
+                                            },
+                                            enabled = interactive
+                                        )
                                     }
-                                },
-                                onSubmit = ::submit,
-                                onLink = {
-                                    passwordOnly = false
-                                    errorMessage = null
-                                },
-                                onForgot = {
-                                    stage = Stage.RECOVERY_ANSWER
-                                    writtenChars = 0
-                                    errorMessage = null
                                 }
-                            )
+                            }
                         }
                     }
                 }
@@ -796,7 +861,8 @@ private fun RecoverySetupForm(
     onQuestionIndex: (Int) -> Unit,
     onCustomQuestion: (String) -> Unit,
     onAnswer: (String) -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    onBack: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         MethodRow(
@@ -858,6 +924,8 @@ private fun RecoverySetupForm(
             onClick = onSubmit,
             enabled = enabled && ready
         )
+        Spacer(Modifier.height(DiaryDim.space1))
+        QuietLink(label = strings.usePassword, onClick = onBack, enabled = enabled)
     }
 }
 
@@ -980,7 +1048,11 @@ private fun QuestionChip(
         border = androidx.compose.foundation.BorderStroke(
             1.dp,
             if (selected) colors.gold.copy(alpha = 0.6f) else colors.edge
-        )
+        ),
+        modifier = Modifier.semantics {
+            stateDescription = if (selected) "selected" else "not selected"
+            role = Role.Tab
+        }
     ) {
         Text(
             text = label,
