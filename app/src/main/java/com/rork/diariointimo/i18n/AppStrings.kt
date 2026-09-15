@@ -173,5 +173,7 @@ data class AppStrings(
     val entriesCount: (Int) -> String,
     val wordsCount: (Int) -> String,
     val exportSuccessTitle: String,
-    val exportSuccessBody: String
+    val exportSuccessBody: String,
+    val showPassword: String,
+    val hidePassword: String
 )

@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,6 +37,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -71,6 +76,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -152,6 +158,7 @@ fun LockScreen(
     var busy by remember { mutableStateOf(false) }
     var closing by remember { mutableStateOf(false) }
     var writtenChars by remember { mutableIntStateOf(0) }
+    var showPassword by remember { mutableStateOf(false) }
 
     // First-run recovery setup fields.
     var useQuestionMethod by remember { mutableStateOf(true) }
@@ -206,6 +213,7 @@ fun LockScreen(
 
     // The recovery answer and the new password focus themselves, ready to type.
     LaunchedEffect(stage) {
+        showPassword = false
         if (stage == Stage.RECOVERY_ANSWER || stage == Stage.RECOVERY_NEW) {
             delay(260)
             runCatching { focusRequester.requestFocus() }
@@ -485,6 +493,7 @@ fun LockScreen(
                             value = current,
                             writtenChars = writtenChars,
                             interactive = interactive,
+                            showPassword = showPassword,
                             biometryLink = if (mode == LockMode.UNLOCK && stage == Stage.SECRET &&
                                 biometrySupported && biometryEnabled
                             ) strings.biometryUnlock else null,
@@ -506,6 +515,7 @@ fun LockScreen(
                                 }
                             },
                             onSubmit = ::submit,
+                            onToggleVisibility = { showPassword = !showPassword },
                             onLink = {
                                 passwordOnly = false
                                 errorMessage = null
@@ -615,6 +625,7 @@ fun LockScreen(
                                         value = current,
                                         writtenChars = writtenChars,
                                         interactive = interactive,
+                                        showPassword = showPassword,
                                         biometryLink = if (mode == LockMode.UNLOCK && stage == Stage.SECRET &&
                                             biometrySupported && biometryEnabled
                                         ) strings.biometryUnlock else null,
@@ -636,6 +647,7 @@ fun LockScreen(
                                             }
                                         },
                                         onSubmit = ::submit,
+                                        onToggleVisibility = { showPassword = !showPassword },
                                         onLink = {
                                             passwordOnly = false
                                             errorMessage = null
@@ -763,23 +775,28 @@ private fun SecretEntry(
     value: String,
     writtenChars: Int,
     interactive: Boolean,
+    showPassword: Boolean,
     biometryLink: String?,
     forgotLink: String?,
     focusRequester: FocusRequester,
     inkBlot: Float,
     onValueChange: (String) -> Unit,
     onSubmit: () -> Unit,
+    onToggleVisibility: () -> Unit,
     onLink: () -> Unit,
     onForgot: () -> Unit
 ) {
     val colors = LocalDiaryColors.current
+    val strings = LocalStrings.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            SecretDots(
-                characterCount = writtenChars,
-                modifier = Modifier.fillMaxWidth(),
-                showPen = interactive
-            )
+            if (!showPassword) {
+                SecretDots(
+                    characterCount = writtenChars,
+                    modifier = Modifier.fillMaxWidth(),
+                    showPen = interactive
+                )
+            }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
@@ -788,15 +805,38 @@ private fun SecretEntry(
                     .fillMaxWidth()
                     .height(DiaryDim.buttonHeight)
                     .focusRequester(focusRequester),
-                textStyle = TextStyle(color = Color.Transparent, fontSize = 12.sp),
-                cursorBrush = SolidColor(Color.Transparent),
+                textStyle = TextStyle(
+                    color = if (showPassword) colors.ink else Color.Transparent,
+                    fontSize = 12.sp
+                ),
+                cursorBrush = SolidColor(if (showPassword) colors.gold else Color.Transparent),
                 singleLine = true,
+                visualTransformation = if (showPassword) VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation('·'),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Go
                 ),
                 keyboardActions = KeyboardActions(onGo = { onSubmit() })
             )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(DiaryDim.touchTarget)
+                    .padding(DiaryDim.space1)
+                    .clip(RoundedCornerShape(DiaryDim.radiusPaper))
+                    .clickable(
+                        enabled = interactive,
+                        onClick = onToggleVisibility
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (showPassword) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                    contentDescription = if (showPassword) strings.hidePassword else strings.showPassword,
+                    tint = colors.inkFaded,
+                    modifier = Modifier.size(DiaryDim.iconMedium)
+                )
+            }
             if (inkBlot > 0f && inkBlot < 1f) {
                 Box(
                     modifier = Modifier

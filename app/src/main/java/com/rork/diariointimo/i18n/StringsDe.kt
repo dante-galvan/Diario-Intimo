@@ -152,4 +152,6 @@ val StringsDe: AppStrings = AppStrings(
     minutesLabel = { n -> if (n == 1) "1 Minute" else "$n Minuten" },
     entriesCount = { n -> if (n == 1) "1 Seite" else "$n Seiten" },
     wordsCount = { n -> if (n == 1) "1 Wort" else "$n Wörter" },
+    showPassword = "Passwort anzeigen",
+    hidePassword = "Passwort ausblenden"
 )

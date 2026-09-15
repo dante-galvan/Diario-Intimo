@@ -700,6 +700,7 @@ private fun SecretField(
     onToggleVisibility: (() -> Unit)? = null
 ) {
     val colors = LocalDiaryColors.current
+    val strings = LocalStrings.current
     Column {
         Text(
             text = label,
@@ -740,7 +741,7 @@ private fun SecretField(
                 ) {
                     androidx.compose.material3.Icon(
                         imageVector = if (showPassword) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                        contentDescription = if (showPassword) "Hide password" else "Show password",
+                        contentDescription = if (showPassword) strings.hidePassword else strings.showPassword,
                         tint = colors.inkFaded,
                         modifier = Modifier.size(DiaryDim.iconMedium)
                     )
