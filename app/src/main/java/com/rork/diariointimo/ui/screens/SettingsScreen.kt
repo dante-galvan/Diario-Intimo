@@ -54,7 +54,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.rork.diariointimo.data.AppearanceMode
@@ -711,26 +710,35 @@ private fun SecretField(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(DiaryDim.fieldHeight)
                 .background(colors.paperLight.copy(alpha = 0.8f), RoundedCornerShape(DiaryDim.radiusPaper))
-                .padding(horizontal = DiaryDim.space3, vertical = DiaryDim.space3)
+                .padding(horizontal = DiaryDim.space3),
+            contentAlignment = Alignment.CenterStart
         ) {
+            if (value.isEmpty()) {
+                Text(
+                    text = "· · · ·",
+                    style = com.rork.diariointimo.ui.theme.SansField.copy(color = colors.inkWhisper),
+                    modifier = if (onToggleVisibility != null) Modifier.padding(end = DiaryDim.touchTarget) else Modifier
+                )
+            }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(if (onToggleVisibility != null) Modifier.padding(end = DiaryDim.touchTarget) else Modifier),
-                textStyle = MaterialTheme.typography.bodyMedium.copy(color = colors.ink),
+                textStyle = com.rork.diariointimo.ui.theme.SansField.copy(color = if (showPassword) colors.ink else Color.Transparent),
                 cursorBrush = SolidColor(colors.gold),
                 singleLine = true,
-                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation('·'),
+                visualTransformation = VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = imeAction
                 )
             )
             if (onToggleVisibility != null) {
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .size(DiaryDim.touchTarget)
@@ -739,7 +747,7 @@ private fun SecretField(
                         .clickable(onClick = onToggleVisibility),
                     contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.material3.Icon(
+                    Icon(
                         imageVector = if (showPassword) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
                         contentDescription = if (showPassword) strings.hidePassword else strings.showPassword,
                         tint = colors.inkFaded,

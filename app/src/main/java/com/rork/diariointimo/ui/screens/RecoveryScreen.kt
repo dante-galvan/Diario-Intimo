@@ -343,7 +343,13 @@ private fun RecoveryField(
         border = BorderStroke(1.dp, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Box(modifier = Modifier.padding(horizontal = DiaryDim.space3, vertical = DiaryDim.space3)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(DiaryDim.fieldHeight)
+                .padding(horizontal = DiaryDim.space3),
+            contentAlignment = Alignment.CenterStart
+        ) {
             if (value.isEmpty()) {
                 Text(
                     text = placeholder,

@@ -40,6 +40,9 @@ object DiaryDim {
     // Primary action height.
     val buttonHeight: Dp = 52.dp
 
+    // Text field height: consistent across all password and text inputs.
+    val fieldHeight: Dp = 48.dp
+
     // Semantic dimensions with a fixed purpose across screens.
     val fabClearance: Dp = 90.dp
     val signatureHeight: Dp = 110.dp

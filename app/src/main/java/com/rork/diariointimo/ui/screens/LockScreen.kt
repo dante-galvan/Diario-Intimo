@@ -48,7 +48,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -803,15 +802,18 @@ private fun SecretEntry(
                 enabled = interactive,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(DiaryDim.buttonHeight)
+                    .height(DiaryDim.fieldHeight)
                     .focusRequester(focusRequester),
                 textStyle = TextStyle(
                     color = if (showPassword) colors.ink else Color.Transparent,
-                    fontSize = 12.sp
+                    fontFamily = SansField.fontFamily,
+                    fontWeight = SansField.fontWeight,
+                    fontSize = SansField.fontSize,
+                    lineHeight = SansField.lineHeight
                 ),
-                cursorBrush = SolidColor(if (showPassword) colors.gold else Color.Transparent),
+                cursorBrush = SolidColor(colors.gold),
                 singleLine = true,
-                visualTransformation = if (showPassword) VisualTransformation.None else androidx.compose.ui.text.input.PasswordVisualTransformation('·'),
+                visualTransformation = VisualTransformation.None,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Go
@@ -1122,7 +1124,13 @@ private fun PaperField(
         border = androidx.compose.foundation.BorderStroke(1.dp, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Box(modifier = Modifier.padding(horizontal = DiaryDim.space3, vertical = DiaryDim.space3)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(DiaryDim.fieldHeight)
+                .padding(horizontal = DiaryDim.space3),
+            contentAlignment = Alignment.CenterStart
+        ) {
             if (value.isEmpty()) {
                 Text(
                     text = placeholder,
