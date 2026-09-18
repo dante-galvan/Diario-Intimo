@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
@@ -720,7 +721,7 @@ private fun LetterSheet(
         Box(
             modifier = Modifier
                 .width(DiaryDim.buttonHeight)
-                .height(1.dp)
+                .height(DiaryDim.dividerHeight)
                 .background(colors.gold.copy(alpha = 0.6f))
         )
         Spacer(Modifier.height(if (compact) DiaryDim.space3 else DiaryDim.space4))
@@ -755,7 +756,7 @@ private fun LetterSheet(
             animationSpec = tween(320),
             label = "errorAlpha"
         )
-        Box(modifier = Modifier.height(if (compact) DiaryDim.space8 else DiaryDim.space8), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.heightIn(min = DiaryDim.space8), contentAlignment = Alignment.Center) {
             Text(
                 text = errorMessage.orEmpty(),
                 style = MaterialTheme.typography.titleMedium.copy(fontStyle = FontStyle.Italic),
@@ -789,10 +790,20 @@ private fun SecretEntry(
     val strings = LocalStrings.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            if (!showPassword) {
+            // Dots are always rendered; alpha fades them out when password is visible.
+            // This keeps the layout geometry identical in both states.
+            val dotsAlpha by animateFloatAsState(
+                targetValue = if (!showPassword && value.isNotEmpty()) 1f else 0f,
+                animationSpec = tween(220),
+                label = "dotsAlpha"
+            )
+            if (dotsAlpha > 0f) {
                 SecretDots(
                     characterCount = writtenChars,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(DiaryDim.fieldHeight)
+                        .graphicsLayer { alpha = dotsAlpha },
                     showPen = interactive
                 )
             }
@@ -862,20 +873,41 @@ private fun SecretEntry(
         InkRule(modifier = Modifier.fillMaxWidth())
 
         Spacer(Modifier.height(DiaryDim.space2))
-        AnimatedVisibility(
-            visible = value.isNotEmpty() && interactive,
-            enter = fadeIn(tween(280)),
-            exit = fadeOut(tween(180))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = DiaryDim.buttonHeight + DiaryDim.space1),
+            contentAlignment = Alignment.Center
         ) {
-            SealedButton(label = action, onClick = onSubmit)
+            val showButton = value.isNotEmpty() && interactive
+            val buttonAlpha by animateFloatAsState(
+                targetValue = if (showButton) 1f else 0f,
+                animationSpec = tween(220),
+                label = "buttonAlpha"
+            )
+            SealedButton(
+                label = action,
+                onClick = onSubmit,
+                modifier = Modifier.graphicsLayer { alpha = buttonAlpha }
+            )
         }
         if (biometryLink != null || forgotLink != null) {
-            AnimatedVisibility(
-                visible = value.isEmpty() && interactive,
-                enter = fadeIn(tween(280)),
-                exit = fadeOut(tween(180))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = DiaryDim.space8),
+                contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val showLinks = value.isEmpty() && interactive
+                val linksAlpha by animateFloatAsState(
+                    targetValue = if (showLinks) 1f else 0f,
+                    animationSpec = tween(220),
+                    label = "linksAlpha"
+                )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.graphicsLayer { alpha = linksAlpha }
+                ) {
                     if (biometryLink != null) {
                         QuietLink(label = biometryLink, onClick = onLink)
                     }
@@ -1065,7 +1097,7 @@ private fun MethodRow(
             Spacer(Modifier.width(DiaryDim.space3))
             Text(
                 text = label,
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
+                style = MaterialTheme.typography.titleMedium,
                 color = colors.ink,
                 modifier = Modifier.weight(1f)
             )
@@ -1119,7 +1151,7 @@ private fun PaperField(
 ) {
     val colors = LocalDiaryColors.current
     Surface(
-        shape = RoundedCornerShape(DiaryDim.radiusPaper),
+        shape = RoundedCornerShape(DiaryDim.radiusInput),
         color = colors.paperLight.copy(alpha = 0.85f),
         border = androidx.compose.foundation.BorderStroke(1.dp, colors.edge),
         modifier = Modifier.fillMaxWidth()
@@ -1128,7 +1160,7 @@ private fun PaperField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(DiaryDim.fieldHeight)
-                .padding(horizontal = DiaryDim.space3),
+                .padding(horizontal = DiaryDim.fieldHorizontalPad),
             contentAlignment = Alignment.CenterStart
         ) {
             if (value.isEmpty()) {

@@ -28,6 +28,13 @@ object DiaryDim {
     // Corner radii: paper edges are barely rounded, like cut card stock.
     val radiusPaper: Dp = 2.dp
     val radiusSheet: Dp = 3.dp
+    val radiusInput: Dp = 3.dp
+
+    // Field anatomy: horizontal padding inside every text field.
+    val fieldHorizontalPad: Dp = 12.dp
+
+    // Divider / rule thickness.
+    val dividerHeight: Dp = 1.dp
 
     // Touch comfort: every interactive control is at least this large.
     val touchTarget: Dp = 48.dp

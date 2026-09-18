@@ -400,7 +400,7 @@ fun EditorScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(1.dp)
+                        .height(DiaryDim.dividerHeight)
                         .drawBehind {
                             drawRect(
                                 color = colors.gold.copy(alpha = 0.4f),
@@ -678,7 +678,7 @@ private fun SuccessSeal(title: String, body: String, onClose: () -> Unit) {
         ) {
             Box(
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(DiaryDim.touchTarget)
                     .background(colors.gold, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
@@ -686,7 +686,7 @@ private fun SuccessSeal(title: String, body: String, onClose: () -> Unit) {
                     imageVector = Icons.Filled.Check,
                     contentDescription = null,
                     tint = colors.paperLight,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(DiaryDim.iconMedium)
                 )
             }
             Spacer(Modifier.width(DiaryDim.space3))

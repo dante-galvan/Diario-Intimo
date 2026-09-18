@@ -338,7 +338,7 @@ private fun RecoveryField(
 ) {
     val colors = LocalDiaryColors.current
     Surface(
-        shape = RoundedCornerShape(DiaryDim.radiusPaper),
+        shape = RoundedCornerShape(DiaryDim.radiusInput),
         color = colors.paperLight.copy(alpha = 0.85f),
         border = BorderStroke(1.dp, colors.edge),
         modifier = Modifier.fillMaxWidth()
@@ -347,7 +347,7 @@ private fun RecoveryField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(DiaryDim.fieldHeight)
-                .padding(horizontal = DiaryDim.space3),
+                .padding(horizontal = DiaryDim.fieldHorizontalPad),
             contentAlignment = Alignment.CenterStart
         ) {
             if (value.isEmpty()) {

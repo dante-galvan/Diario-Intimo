@@ -184,7 +184,9 @@ fun SecretDots(
             progress.animateTo(target, animationSpec = tween(durationMillis = 190))
         }
 
-        val baseline = with(density) { (lineHeight * 0.72f).toPx() }
+        // Baseline aligned to match BasicTextField centered text position:
+        // containerHeight/2 + fontSize/3 for a 13sp font in a 48dp field ≈ 0.58 * height
+        val baseline = with(density) { (lineHeight * 0.58f).toPx() }
 
         // The pen rides behind the dots: it accompanies the writing, never covers it.
         if (showPen && visibleChars > 0) {
@@ -192,7 +194,7 @@ fun SecretDots(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .offset(x = penX - penHeight * 0.17f, y = lineHeight * 0.72f - penHeight)
+                    .offset(x = penX - penHeight * 0.17f, y = lineHeight * 0.58f - penHeight)
             ) {
                 FountainPen(height = penHeight, tilt = 18f, writing = true)
             }

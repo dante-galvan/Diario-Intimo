@@ -220,7 +220,7 @@ fun HomeScreen(
                             start = DiaryDim.screenPad,
                             end = DiaryDim.screenPad,
                             // Clearance for the floating action button and its fade.
-                            bottom = 140.dp
+                            bottom = DiaryDim.fabClearance + DiaryDim.space8
                         ),
                         verticalArrangement = Arrangement.spacedBy(DiaryDim.space3)
                     ) {
@@ -271,9 +271,9 @@ private fun SearchField(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(colors.paperLight.copy(alpha = 0.75f), RoundedCornerShape(DiaryDim.radiusPaper))
-            .border(BorderStroke(1.dp, colors.edge), RoundedCornerShape(DiaryDim.radiusPaper))
-            .padding(horizontal = DiaryDim.space3, vertical = DiaryDim.space3)
+            .background(colors.paperLight.copy(alpha = 0.75f), RoundedCornerShape(DiaryDim.radiusInput))
+            .border(BorderStroke(1.dp, colors.edge), RoundedCornerShape(DiaryDim.radiusInput))
+            .padding(horizontal = DiaryDim.fieldHorizontalPad, vertical = DiaryDim.space3)
     ) {
         if (value.isEmpty()) {
             Text(
@@ -318,7 +318,7 @@ private fun EntryCard(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.width(46.dp)
+                modifier = Modifier.width(DiaryDim.touchTarget)
             ) {
                 Text(
                     text = date.dayOfMonth.toString(),
@@ -334,7 +334,7 @@ private fun EntryCard(
             Box(
                 modifier = Modifier
                     .padding(horizontal = DiaryDim.space3)
-                    .width(1.dp)
+                    .width(DiaryDim.dividerHeight)
                     .fillMaxHeight()
                     .background(colors.gold.copy(alpha = 0.35f))
             )
@@ -361,7 +361,7 @@ private fun EntryCard(
                         Spacer(Modifier.width(DiaryDim.space2))
                         Box(
                             modifier = Modifier
-                                .size(11.dp)
+                                .size(DiaryDim.space2)
                                 .background(colors.wax, RoundedCornerShape(50))
                         )
                     }

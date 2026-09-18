@@ -559,7 +559,7 @@ private fun Section(title: String, content: @Composable () -> Unit) {
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(1.dp)
+                    .height(DiaryDim.dividerHeight)
                     .background(colors.gold.copy(alpha = 0.28f))
             )
         }
@@ -711,8 +711,8 @@ private fun SecretField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(DiaryDim.fieldHeight)
-                .background(colors.paperLight.copy(alpha = 0.8f), RoundedCornerShape(DiaryDim.radiusPaper))
-                .padding(horizontal = DiaryDim.space3),
+                .background(colors.paperLight.copy(alpha = 0.8f), RoundedCornerShape(DiaryDim.radiusInput))
+                .padding(horizontal = DiaryDim.fieldHorizontalPad),
             contentAlignment = Alignment.CenterStart
         ) {
             if (value.isEmpty()) {
@@ -759,7 +759,7 @@ private fun SecretField(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(1.dp)
+                .height(DiaryDim.dividerHeight)
                 .background(colors.edge)
         )
     }

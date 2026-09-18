@@ -93,7 +93,7 @@ fun SealedButton(
                     imageVector = icon,
                     contentDescription = null,
                     tint = colors.goldLight,
-                    modifier = Modifier.size(DiaryDim.iconSmall + 2.dp)
+                    modifier = Modifier.size(DiaryDim.iconMedium)
                 )
                 Spacer(Modifier.width(DiaryDim.space3))
             }
@@ -174,7 +174,7 @@ fun PaperChip(
     Surface(
         onClick = onClick,
         interactionSource = interaction,
-        shape = RoundedCornerShape(1.dp),
+        shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (selected) colors.ink else Color.Transparent,
         border = BorderStroke(
             1.dp,
