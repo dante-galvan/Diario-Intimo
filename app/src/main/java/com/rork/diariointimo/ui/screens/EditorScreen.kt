@@ -123,6 +123,7 @@ import com.rork.diariointimo.ui.components.PaperBackground
 import com.rork.diariointimo.ui.components.PaperChip
 import com.rork.diariointimo.ui.components.SealedButton
 import com.rork.diariointimo.ui.components.drawRuledLines
+import com.rork.diariointimo.ui.ads.BannerAdView
 import com.rork.diariointimo.ui.theme.DiaryColors
 import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.HandSheetBody
@@ -558,6 +559,12 @@ fun EditorScreen(
                         onClick = { pendingExportShare = false }
                     )
                 }
+                Spacer(Modifier.height(DiaryDim.space3))
+                BannerAdView(
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .padding(bottom = DiaryDim.space2)
+                )
                 Spacer(Modifier.height(DiaryDim.space12))
             }
         }

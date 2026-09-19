@@ -200,7 +200,7 @@ fun HomeScreen(
 
             Spacer(Modifier.height(DiaryDim.space4))
 
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
                 if (entries.isEmpty()) {
                     EmptyPages(
                         title = when {
@@ -220,8 +220,8 @@ fun HomeScreen(
                         contentPadding = PaddingValues(
                             start = DiaryDim.screenPad,
                             end = DiaryDim.screenPad,
-                            // Clearance for the floating action button and its fade.
-                            bottom = DiaryDim.fabClearance + DiaryDim.space8
+                            // Clearance for the floating action button, its fade, and the banner.
+                            bottom = DiaryDim.fabClearance + DiaryDim.space8 + DiaryDim.space10
                         ),
                         verticalArrangement = Arrangement.spacedBy(DiaryDim.space3)
                     ) {

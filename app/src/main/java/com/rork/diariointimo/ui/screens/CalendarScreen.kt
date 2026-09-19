@@ -52,6 +52,7 @@ import com.rork.diariointimo.i18n.LocalStrings
 import com.rork.diariointimo.ui.components.AppearInk
 import com.rork.diariointimo.ui.components.InkIconButton
 import com.rork.diariointimo.ui.components.PaperBackground
+import com.rork.diariointimo.ui.ads.BannerAdView
 import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.HandCardExcerpt
 import com.rork.diariointimo.ui.theme.LocalDiaryColors
@@ -223,6 +224,12 @@ fun CalendarScreen(
             }
 
             Spacer(Modifier.height(DiaryDim.space10))
+
+            BannerAdView(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(bottom = DiaryDim.space2)
+            )
         }
     }
 }

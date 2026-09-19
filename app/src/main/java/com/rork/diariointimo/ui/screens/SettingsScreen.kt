@@ -66,6 +66,7 @@ import com.rork.diariointimo.ui.components.AppearInk
 import com.rork.diariointimo.ui.components.InkIconButton
 import com.rork.diariointimo.ui.components.PaperBackground
 import com.rork.diariointimo.ui.components.SealedButton
+import com.rork.diariointimo.ui.ads.BannerAdView
 import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.LocalDiaryColors
 import kotlinx.coroutines.delay
@@ -239,6 +240,12 @@ fun SettingsScreen(
                 modifier = Modifier.padding(horizontal = DiaryDim.screenPad)
             )
             Spacer(Modifier.height(DiaryDim.space12))
+
+            BannerAdView(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(bottom = DiaryDim.space2)
+            )
         }
     }
 

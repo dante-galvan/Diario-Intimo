@@ -142,14 +142,35 @@ fun AppNavigation(
         }
 
         composable(Routes.CALENDAR) {
+            val activity = context as? android.app.Activity
+            var calendarLeaving by rememberSaveable { mutableStateOf(false) }
+            fun calendarLeave() {
+                if (calendarLeaving) return
+                calendarLeaving = true
+                navController.popBackStack()
+            }
             CalendarScreen(
                 state = diaryState,
                 onOpenEntry = { id -> navController.navigate(Routes.editor(id)) },
-                onBack = { navController.popBackStack() }
+                onBack = {
+                    InterstitialAdManager.incrementAction()
+                    if (activity != null) {
+                        InterstitialAdManager.maybeShow(activity) { calendarLeave() }
+                    } else {
+                        calendarLeave()
+                    }
+                }
             )
         }
 
         composable(Routes.SETTINGS) {
+            val activity = context as? android.app.Activity
+            var settingsLeaving by rememberSaveable { mutableStateOf(false) }
+            fun settingsLeave() {
+                if (settingsLeaving) return
+                settingsLeaving = true
+                navController.popBackStack()
+            }
             SettingsScreen(
                 language = sessionState.language,
                 appearance = sessionState.appearance,
@@ -170,7 +191,14 @@ fun AppNavigation(
                     session.lock()
                     diary.forget()
                 },
-                onBack = { navController.popBackStack() }
+                onBack = {
+                    InterstitialAdManager.incrementAction()
+                    if (activity != null) {
+                        InterstitialAdManager.maybeShow(activity) { settingsLeave() }
+                    } else {
+                        settingsLeave()
+                    }
+                }
             )
         }
 

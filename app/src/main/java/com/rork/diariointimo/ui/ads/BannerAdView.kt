@@ -21,6 +21,7 @@ import com.google.android.libraries.ads.mobile.sdk.banner.AdSize
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAd
 import com.google.android.libraries.ads.mobile.sdk.banner.BannerAdRequest
 import com.google.android.libraries.ads.mobile.sdk.common.AdLoadResult
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -35,25 +36,36 @@ fun BannerAdView(
     val isPreview = LocalInspectionMode.current
 
     LaunchedEffect(adUnitId) {
-        if (!isPreview && AdMobInitializer.isInitialized) {
-            val adSize = AdSize.getLargeAnchoredAdaptiveBannerAdSize(context, 360)
-            coroutineScope.launch {
-                when (val result = BannerAd.load(BannerAdRequest.Builder(adUnitId, adSize).build())) {
-                    is AdLoadResult.Success -> {
-                        Log.d("AdMob", "Banner loaded")
-                        bannerAd = result.ad
-                    }
-                    is AdLoadResult.Failure -> {
-                        Log.w("AdMob", "Banner failed: ${result.error}")
-                        bannerAd = null
-                    }
+        if (isPreview) return@LaunchedEffect
+        // Wait for SDK init with backoff (max ~5s)
+        repeat(10) {
+            if (AdMobInitializer.isInitialized) return@LaunchedEffect
+            delay(500)
+        }
+        // Destroy old ad before loading new one
+        bannerAd?.destroy()
+        bannerAd = null
+        val screenWidth = context.resources.displayMetrics.widthPixels
+        val adSize = AdSize.getLargeAnchoredAdaptiveBannerAdSize(context, screenWidth)
+        coroutineScope.launch {
+            when (val result = BannerAd.load(BannerAdRequest.Builder(adUnitId, adSize).build())) {
+                is AdLoadResult.Success -> {
+                    Log.d("AdMob", "Banner loaded")
+                    bannerAd = result.ad
+                }
+                is AdLoadResult.Failure -> {
+                    Log.w("AdMob", "Banner failed: ${result.error}")
+                    bannerAd = null
                 }
             }
         }
     }
 
     DisposableEffect(Unit) {
-        onDispose { bannerAd?.destroy() }
+        onDispose {
+            bannerAd?.destroy()
+            bannerAd = null
+        }
     }
 
     bannerAd?.let { ad ->
