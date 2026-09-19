@@ -190,7 +190,7 @@ fun CalendarScreen(
                                 onClick = { onOpenEntry(entry.id) },
                                 shape = RoundedCornerShape(DiaryDim.radiusPaper),
                                 color = colors.paperLight.copy(alpha = 0.9f),
-                                border = BorderStroke(1.dp, colors.edge),
+                                border = BorderStroke(DiaryDim.dividerHeight, colors.edge),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(bottom = DiaryDim.space3)

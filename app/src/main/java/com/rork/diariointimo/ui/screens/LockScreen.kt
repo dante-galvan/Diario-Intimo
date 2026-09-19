@@ -89,7 +89,7 @@ import com.rork.diariointimo.ui.components.DeskBackground
 import com.rork.diariointimo.ui.components.Envelope
 import com.rork.diariointimo.ui.components.InkRule
 import com.rork.diariointimo.ui.components.SealedButton
-import com.rork.diariointimo.ui.components.SecretDots
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.rork.diariointimo.ui.components.paperGrain
 import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.LocalDiaryColors
@@ -768,7 +768,7 @@ private fun LetterSheet(
     }
 }
 
-/** Hidden secret field: ink security dots, the transparent entry, and the wax button. */
+/** Hidden secret field: single BasicTextField with password visual transformation. */
 @Composable
 private fun SecretEntry(
     action: String,
@@ -790,23 +790,6 @@ private fun SecretEntry(
     val strings = LocalStrings.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            // Dots are always rendered; alpha fades them out when password is visible.
-            // This keeps the layout geometry identical in both states.
-            val dotsAlpha by animateFloatAsState(
-                targetValue = if (!showPassword && value.isNotEmpty()) 1f else 0f,
-                animationSpec = tween(220),
-                label = "dotsAlpha"
-            )
-            if (dotsAlpha > 0f) {
-                SecretDots(
-                    characterCount = writtenChars,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(DiaryDim.fieldHeight)
-                        .graphicsLayer { alpha = dotsAlpha },
-                    showPen = interactive
-                )
-            }
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
@@ -816,7 +799,7 @@ private fun SecretEntry(
                     .height(DiaryDim.fieldHeight)
                     .focusRequester(focusRequester),
                 textStyle = TextStyle(
-                    color = if (showPassword) colors.ink else Color.Transparent,
+                    color = colors.ink,
                     fontFamily = SansField.fontFamily,
                     fontWeight = SansField.fontWeight,
                     fontSize = SansField.fontSize,
@@ -824,7 +807,7 @@ private fun SecretEntry(
                 ),
                 cursorBrush = SolidColor(colors.gold),
                 singleLine = true,
-                visualTransformation = VisualTransformation.None,
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Go
@@ -1021,7 +1004,7 @@ private fun RecoveryAnswerForm(
             Surface(
                 shape = RoundedCornerShape(DiaryDim.radiusPaper),
                 color = colors.paper.copy(alpha = 0.7f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, colors.edge.copy(alpha = 0.7f)),
+                border = androidx.compose.foundation.BorderStroke(DiaryDim.dividerHeight, colors.edge.copy(alpha = 0.7f)),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -1068,7 +1051,7 @@ private fun MethodRow(
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (checked) colors.paperLight else colors.paperLight.copy(alpha = 0.55f),
         border = androidx.compose.foundation.BorderStroke(
-            1.dp,
+            DiaryDim.dividerHeight,
             if (checked) colors.gold.copy(alpha = 0.6f) else colors.edge
         ),
         modifier = Modifier.fillMaxWidth()
@@ -1120,7 +1103,7 @@ private fun QuestionChip(
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (selected) colors.ink else colors.paperLight.copy(alpha = 0.75f),
         border = androidx.compose.foundation.BorderStroke(
-            1.dp,
+            DiaryDim.dividerHeight,
             if (selected) colors.gold.copy(alpha = 0.6f) else colors.edge
         ),
         modifier = Modifier.semantics {
@@ -1153,7 +1136,7 @@ private fun PaperField(
     Surface(
         shape = RoundedCornerShape(DiaryDim.radiusInput),
         color = colors.paperLight.copy(alpha = 0.85f),
-        border = androidx.compose.foundation.BorderStroke(1.dp, colors.edge),
+        border = androidx.compose.foundation.BorderStroke(DiaryDim.dividerHeight, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
         Box(

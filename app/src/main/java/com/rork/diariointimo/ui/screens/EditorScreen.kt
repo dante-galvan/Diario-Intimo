@@ -666,7 +666,7 @@ private fun SuccessSeal(title: String, body: String, onClose: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paperLight,
-        border = BorderStroke(1.dp, colors.gold.copy(alpha = 0.55f)),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.gold.copy(alpha = 0.55f)),
         shadowElevation = 8.dp,
         modifier = Modifier
             .padding(horizontal = DiaryDim.screenPad)
@@ -806,7 +806,7 @@ private fun SignaturePad(
 
                 Surface(
                     color = colors.paperLight,
-                    border = BorderStroke(1.dp, colors.edge),
+                    border = BorderStroke(DiaryDim.dividerHeight, colors.edge),
                     shape = RoundedCornerShape(DiaryDim.radiusPaper)
                 ) {
                     Canvas(
@@ -901,7 +901,7 @@ private fun ExportOption(
         onClick = onClick,
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paper,
-        border = BorderStroke(1.dp, colors.edge.copy(alpha = 0.8f)),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.edge.copy(alpha = 0.8f)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -966,7 +966,7 @@ private fun WaxToggle(active: Boolean, description: String, onClick: () -> Unit)
         shape = CircleShape,
         color = if (active) colors.wax else colors.paperLight.copy(alpha = 0.7f),
         border = BorderStroke(
-            1.dp,
+            DiaryDim.dividerHeight,
             if (active) colors.waxDeep else colors.edge.copy(alpha = 0.55f)
         ),
         modifier = Modifier

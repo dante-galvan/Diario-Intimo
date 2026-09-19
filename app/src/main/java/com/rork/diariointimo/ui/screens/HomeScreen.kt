@@ -272,7 +272,7 @@ private fun SearchField(
         modifier = modifier
             .fillMaxWidth()
             .background(colors.paperLight.copy(alpha = 0.75f), RoundedCornerShape(DiaryDim.radiusInput))
-            .border(BorderStroke(1.dp, colors.edge), RoundedCornerShape(DiaryDim.radiusInput))
+            .border(BorderStroke(DiaryDim.dividerHeight, colors.edge), RoundedCornerShape(DiaryDim.radiusInput))
             .padding(horizontal = DiaryDim.fieldHorizontalPad, vertical = DiaryDim.space3)
     ) {
         if (value.isEmpty()) {
@@ -307,7 +307,7 @@ private fun EntryCard(
         onClick = onClick,
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paperLight.copy(alpha = 0.88f),
-        border = BorderStroke(1.dp, colors.edge.copy(alpha = 0.8f)),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.edge.copy(alpha = 0.8f)),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(

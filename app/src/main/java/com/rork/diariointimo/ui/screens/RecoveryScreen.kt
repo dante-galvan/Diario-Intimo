@@ -279,7 +279,7 @@ private fun RecoveryToggle(label: String, checked: Boolean, onChecked: (Boolean)
         onClick = { onChecked(!checked) },
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paperLight.copy(alpha = 0.85f),
-        border = BorderStroke(1.dp, colors.edge),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -313,7 +313,7 @@ private fun QuestionRow(label: String, selected: Boolean, onClick: () -> Unit) {
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (selected) colors.ink else colors.paperLight.copy(alpha = 0.7f),
         border = BorderStroke(
-            1.dp,
+            DiaryDim.dividerHeight,
             if (selected) colors.gold.copy(alpha = 0.6f) else colors.edge
         ),
         modifier = Modifier.fillMaxWidth()
@@ -340,7 +340,7 @@ private fun RecoveryField(
     Surface(
         shape = RoundedCornerShape(DiaryDim.radiusInput),
         color = colors.paperLight.copy(alpha = 0.85f),
-        border = BorderStroke(1.dp, colors.edge),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
         Box(

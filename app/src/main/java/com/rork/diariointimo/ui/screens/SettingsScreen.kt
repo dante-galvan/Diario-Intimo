@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.rork.diariointimo.data.AppearanceMode
@@ -590,7 +591,7 @@ private fun SettingRow(label: String, value: String, onClick: () -> Unit) {
         onClick = onClick,
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paperLight.copy(alpha = 0.85f),
-        border = BorderStroke(1.dp, colors.edge),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -621,7 +622,7 @@ private fun ToggleRow(label: String, checked: Boolean, onChecked: (Boolean) -> U
     Surface(
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = colors.paperLight.copy(alpha = 0.85f),
-        border = BorderStroke(1.dp, colors.edge),
+        border = BorderStroke(DiaryDim.dividerHeight, colors.edge),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -656,7 +657,7 @@ private fun ChoiceRow(label: String, selected: Boolean, onClick: () -> Unit) {
         shape = RoundedCornerShape(DiaryDim.radiusPaper),
         color = if (selected) colors.ink else colors.paperLight.copy(alpha = 0.7f),
         border = BorderStroke(
-            1.dp,
+            DiaryDim.dividerHeight,
             if (selected) colors.gold.copy(alpha = 0.6f) else colors.edge
         ),
         modifier = Modifier.fillMaxWidth()
@@ -728,10 +729,10 @@ private fun SecretField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .then(if (onToggleVisibility != null) Modifier.padding(end = DiaryDim.touchTarget) else Modifier),
-                textStyle = com.rork.diariointimo.ui.theme.SansField.copy(color = if (showPassword) colors.ink else Color.Transparent),
+                textStyle = com.rork.diariointimo.ui.theme.SansField.copy(color = colors.ink),
                 cursorBrush = SolidColor(colors.gold),
                 singleLine = true,
-                visualTransformation = VisualTransformation.None,
+                visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = imeAction
