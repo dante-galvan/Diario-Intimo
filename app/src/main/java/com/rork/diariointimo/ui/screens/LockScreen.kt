@@ -812,7 +812,15 @@ private fun SecretEntry(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Go
                 ),
-                keyboardActions = KeyboardActions(onGo = { onSubmit() })
+                keyboardActions = KeyboardActions(onGo = { onSubmit() }),
+                decorationBox = { innerTextField ->
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        innerTextField()
+                    }
+                }
             )
             Box(
                 modifier = Modifier
