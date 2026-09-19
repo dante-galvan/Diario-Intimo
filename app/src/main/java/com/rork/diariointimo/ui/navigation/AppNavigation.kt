@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -28,6 +29,7 @@ import com.rork.diariointimo.ui.screens.HomeScreen
 import com.rork.diariointimo.ui.screens.LanguageScreen
 import com.rork.diariointimo.ui.screens.RecoveryScreen
 import com.rork.diariointimo.ui.screens.SettingsScreen
+import com.rork.diariointimo.ui.ads.InterstitialAdManager
 import com.rork.diariointimo.ui.vm.DiaryViewModel
 import com.rork.diariointimo.ui.vm.SessionViewModel
 import kotlinx.coroutines.launch
@@ -55,6 +57,7 @@ fun AppNavigation(
     val diaryState by diary.uiState.collectAsStateWithLifecycle()
     val sessionState by session.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) { diary.loadIfNeeded() }
 
@@ -101,9 +104,7 @@ fun AppNavigation(
         ) { backStackEntry ->
             val entryId = backStackEntry.arguments?.getString("entryId")
             val entry = diaryState.entries.firstOrNull { it.id == entryId }
-            // Root fix for the blank-screen bug: leaving a sheet (close, delete
-            // or auto-discard) pops this route exactly ONCE. The entry vanishing
-            // from the state never navigates on its own.
+            val activity = context as? android.app.Activity
             var leaving by rememberSaveable { mutableStateOf(false) }
             if (entry == null) {
                 LaunchedEffect(Unit) {
@@ -129,7 +130,12 @@ fun AppNavigation(
                     },
                     onBack = {
                         diary.discardIfBlank(entry.id)
-                        leave()
+                        InterstitialAdManager.incrementAction()
+                        if (activity != null) {
+                            InterstitialAdManager.maybeShow(activity) { leave() }
+                        } else {
+                            leave()
+                        }
                     }
                 )
             }

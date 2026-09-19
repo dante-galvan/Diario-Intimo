@@ -34,6 +34,7 @@ import com.rork.diariointimo.i18n.LocalStrings
 import com.rork.diariointimo.i18n.localeFor
 import com.rork.diariointimo.i18n.resolveLanguage
 import com.rork.diariointimo.i18n.stringsFor
+import com.rork.diariointimo.ui.ads.AdMobInitializer
 import com.rork.diariointimo.ui.components.PenIntro
 import com.rork.diariointimo.ui.navigation.AppNavigation
 import com.rork.diariointimo.ui.screens.LockMode
@@ -48,6 +49,7 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        AdMobInitializer.initialize(applicationContext)
         setContent { DiaryApp() }
     }
 }

@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.koin.androidx.compose)
     implementation(libs.androidx.biometric)
+    implementation(libs.gma.ads.mobile.sdk)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     debugImplementation(libs.androidx.ui.tooling)
 }

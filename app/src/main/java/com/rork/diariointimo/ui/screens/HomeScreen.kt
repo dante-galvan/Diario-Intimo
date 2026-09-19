@@ -65,6 +65,7 @@ import com.rork.diariointimo.ui.components.PaperBackground
 import com.rork.diariointimo.ui.components.PaperChip
 import com.rork.diariointimo.ui.components.SealedButton
 import com.rork.diariointimo.ui.components.paperGrain
+import com.rork.diariointimo.ui.ads.BannerAdView
 import com.rork.diariointimo.ui.theme.DiaryDim
 import com.rork.diariointimo.ui.theme.HandCardExcerpt
 import com.rork.diariointimo.ui.theme.LocalDiaryColors
@@ -256,6 +257,12 @@ fun HomeScreen(
                         .fillMaxWidth(0.82f)
                 )
             }
+
+            BannerAdView(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .padding(bottom = DiaryDim.space2)
+            )
         }
     }
 }
